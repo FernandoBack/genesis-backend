@@ -41,6 +41,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/config").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/upload").hasRole("ADMIN") // Só Admin envia foto
+                                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()       // Todo mundo pode VER a foto
+// ...
 
                         // Rotas Privadas (Só Admin)
                         .requestMatchers(HttpMethod.POST, "/api/config").hasRole("ADMIN")
