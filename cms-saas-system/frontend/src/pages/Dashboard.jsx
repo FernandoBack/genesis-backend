@@ -4,6 +4,7 @@ import { Save, LogOut, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
+import ImageUpload from '../components/molecules/ImageUpload';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -15,7 +16,8 @@ export default function Dashboard() {
     nomeEmpresa: '',
     slogan: '',
     corPrimaria: '#000000',
-    emailContato: ''
+    emailContato: '',
+    logoUrl: '' // Campo da logo
   });
 
   // 1. Ao carregar a tela, busca os dados no Java
@@ -23,18 +25,18 @@ export default function Dashboard() {
     async function loadData() {
       try {
         const response = await api.get('/api/config');
-        // Se o Java devolver dados vazios (primeira vez), não quebra
         if (response.data) {
           setConfig(response.data);
         }
       } catch (error) {
-        alert("Erro de conexão com o servidor.");
+        // Se der 403 (Token inválido), manda pro login
+        navigate('/');
       } finally {
         setLoading(false);
       }
     }
     loadData();
-  }, []);
+  }, [navigate]);
 
   // 2. Salvar no Java
   async function handleSave(e) {
@@ -76,6 +78,7 @@ export default function Dashboard() {
           
           <form onSubmit={handleSave} className="space-y-6">
             
+            {/* Campo 1: Nome */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Nome da Empresa</label>
               <Input 
@@ -84,6 +87,7 @@ export default function Dashboard() {
               />
             </div>
 
+            {/* Campo 2: Slogan */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">Slogan / Descrição</label>
               <Input 
@@ -92,7 +96,20 @@ export default function Dashboard() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* 👇 AQUI ESTÁ O BLOCO NOVO (Upload de Imagem) 👇 */}
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-xs font-bold text-gray-400 mb-4 uppercase tracking-wider">Imagens</h3>
+              
+              <ImageUpload 
+                label="Logo da Empresa"
+                value={config.logoUrl} 
+                onUploadSuccess={(url) => setConfig({ ...config, logoUrl: url })} 
+              />
+            </div>
+            {/* 👆 FIM DO BLOCO NOVO 👆 */}
+
+            {/* Grid de Cores e Contato */}
+            <div className="grid grid-cols-2 gap-4 border-t pt-4 mt-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Cor do Site</label>
                 <div className="flex items-center gap-3">
