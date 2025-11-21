@@ -1,96 +1,150 @@
-# Genesis Core API | Enterprise Scaffolding Engine
+📙 README — Genesis Core API (Backend)
 
-**Versão:** 1.0.0-SNAPSHOT  
-**Ambiente:** Produção / Desenvolvimento
+Backend em Java Spring Boot • White-label • JWT • API oficial do Genesis
 
----
+# Genesis Core API | Backend Oficial do Projeto Genesis
 
-## 🔭 Visão Geral do Projeto
-
-O **Genesis Core** é uma arquitetura de referência (boilerplate) de alto desempenho, projetada para acelerar a entrega de aplicações web corporativas customizadas.
-
-Diferente de CMSs monolíticos tradicionais (como WordPress) ou soluções SaaS genéricas, o Genesis opera no modelo de **Fábrica de Software Single-Tenant**. Isso significa que ele combina a agilidade de setup de um template com a robustez, segurança e isolamento de dados de um desenvolvimento sob medida em Java.
-
-O objetivo deste motor é eliminar as tarefas repetitivas de configuração de infraestrutura (Autenticação, Segurança, ORM, Logs), permitindo que a equipe de engenharia foque 100% nas regras de negócio específicas do cliente desde o primeiro dia.
-
-## 💎 Diferenciais Estratégicos
-
-### 1. Arquitetura de Isolamento (Single-Tenant)
-Cada instância do Genesis opera com seu próprio banco de dados e contexto de execução.
-* **Benefício:** Elimina riscos de vazamento de dados entre clientes (Cross-tenant data leak) e permite customizações profundas sem afetar outros projetos.
-
-### 2. Segurança "Zero-Trust"
-Implementação de segurança de nível bancário nativa.
-* Autenticação **Stateless via JWT** (JSON Web Token).
-* Criptografia de senhas com **BCrypt**.
-* Proteção contra ataques comuns (CORS, CSRF, SQL Injection) mitigados pelo framework.
-
-### 3. Performance e Escalabilidade
-Construído sobre o **Spring Boot 3**, aproveitando a JVM para processamento pesado.
-* Preparado para ambientes containerizados (Docker/Kubernetes).
-* API RESTful otimizada para consumo por Front-ends modernos (React/Next.js/Mobile).
+**Versão:** 1.0.0  
+**Tecnologia:** Java 17 + Spring Boot  
+**Função:** API central para o ecossistema Genesis  
+**Status:** Em desenvolvimento
 
 ---
 
-## 🚀 Tech Stack
+## 🔭 Visão Geral
 
-A escolha tecnológica prioriza longevidade, tipagem forte e suporte corporativo.
+O **Genesis Core API** é o backend responsável por fornecer todos os serviços necessários para o funcionamento do sistema Genesis.  
+Ele é totalmente integrado ao Frontend (SPA React) e oferece suporte a:
 
-* **Core:** Java 17 (LTS) + Spring Boot 3.x
-* **Database:** PostgreSQL (Relational Persistence)
-* **Security:** Spring Security + Auth0 JWT
-* **Data Access:** Spring Data JPA (Hibernate)
-* **Build Tool:** Maven
-* **Utilities:** Lombok, Spring DevTools
+- Autenticação e autorização com JWT
+- Configuração White-label (cores, logo, textos…)
+- Painel administrativo (CMS)
+- Gestão de usuários
+- Informações públicas do site
+- Comunicação centralizada com a interface web
 
----
-
-## ⚙️ Módulos do Sistema
-
-O backend está modularizado seguindo o padrão **Layered Architecture** para facilitar manutenção:
-
-### 🔐 Auth & Security Module
-Responsável pelo ciclo de vida do usuário e proteção de rotas.
-* **Filter Chain:** Interceptação de requisições HTTP para validação de token.
-* **Role-Based Access Control (RBAC):** Gestão granular de permissões (ADMIN vs USER).
-
-### 🎨 System Config Module
-API dinâmica para gerenciamento de identidade visual (White-label).
-* Permite que o Front-end renderize temas, logotipos e metadados baseados na configuração persistida no banco, sem necessidade de novos deploys para mudanças visuais simples.
+O propósito dessa API é garantir que **um único backend** consiga atender **várias empresas**, cada uma com sua própria identidade visual, sem necessidade de múltiplas instalações.
 
 ---
 
-## 🛠️ Guia de Instalação (Local)
+## ⚙️ Tecnologias Utilizadas
+
+- **Java 17**
+- **Spring Boot 3**
+- **Spring Web**
+- **Spring Security + JWT**
+- **Spring Data JPA / Hibernate**
+- **MySQL ou PostgreSQL**
+- **ModelMapper para conversões**
+- **Lombok para simplificar o código**
+
+---
+
+## 🧩 Funcionalidades Principais
+
+### 1. 🎨 Sistema White-label
+O backend é responsável por entregar ao Frontend toda a identidade visual configurada pelo cliente:
+
+- Cores personalizadas
+- Logo principal
+- Slogan
+- Textos do site
+- Configurações gerais
+
+Rotas principais:
+
+- **GET** `/api/config/public`  
+  → Usado pelo Frontend ao iniciar a aplicação para montar o layout.
+
+- **POST** `/api/config`  
+  → Usado no painel administrativo para atualizar as informações do cliente.
+
+---
+
+### 2. 🔐 Autenticação com JWT
+Sistema completo de login com proteção de rotas.
+
+- Login retorna token JWT
+- Usuário autenticado acessa rotas protegidas
+- Interceptor do Frontend insere o token automaticamente
+
+Endpoints:
+
+- **POST** `/auth/login`
+- **GET** `/auth/me`
+
+---
+
+### 3. 🧑‍💼 Módulo de Usuários
+Inclui:
+
+- CRUD completo
+- Perfis de acesso (ROLE_USER, ROLE_ADMIN)
+- Controle de permissões utilizando Spring Security
+
+---
+
+## 🗂️ Estrutura do Projeto
+
+
+
+src/
+├── controller/ → Controladores REST
+├── service/ → Regras de negócio
+├── repository/ → Camada de acesso ao banco
+├── model/ → Entidades JPA
+├── dto/ → Objetos de transferência
+├── mapper/ → Conversões DTO ↔ Entity
+└── config/ → Segurança, CORS, Beans, JWT etc.
+
+
+---
+
+## 🏗️ Como rodar o projeto
 
 ### Pré-requisitos
-* JDK 17+ instalado.
-* PostgreSQL rodando na porta `5433`.
-* Maven (opcional, o projeto inclui o wrapper `mvnw`).
+- Java 17 instalado
+- Maven 3.8 ou superior
+- Banco MySQL ou PostgreSQL em execução
 
-### 1. Configuração do Banco de Dados
-Crie um banco de dados vazio no PostgreSQL chamado `genesis_db`.
-Verifique o arquivo `src/main/resources/application.properties` e ajuste as credenciais se necessário:
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/SEU_USUARIO/genesis-backend.git
+cd genesis-backend
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5433/genesis_db
-spring.datasource.username=postgres
-spring.datasource.password=sua_senha
+2. Configurar o arquivo application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/genesis
+spring.datasource.username=root
+spring.datasource.password=123456
 
-Na raiz do projeto, execute:
+# Permitir o Frontend acessar a API
+genesis.frontend.cors=http://localhost:5173
 
-Bash
+3. Executar
+mvn spring-boot:run
 
-# Linux/Mac
-./mvnw spring-boot:run
 
-# Windows
-.\mvnw.cmd spring-boot:run
-A API estará disponível em: http://localhost:8080
+A API será iniciada em:
 
-Método,Rota,Descrição,Acesso
-POST,/auth/register,Cria um novo usuário Admin,Público
-POST,/auth/login,Retorna o Token JWT de acesso,Público
+http://localhost:8080
 
-Método,Rota,Descrição,Acesso
-GET,/api/config,"Retorna dados do site (Logo, Cores)",Público
-POST,/api/config,Atualiza dados do site,Token Bearer (Admin)
+🔌 Integração Direta com o Frontend
+
+O Frontend (SPA React) consome diretamente estes endpoints:
+
+/auth/login – autenticação
+
+/api/config/public – carregamento do tema
+
+/api/config – painel admin
+
+/api/users/ – gestão de usuários
+
+/api/dashboard – dados internos
+
+Toda a comunicação é feita via JSON.
+
+🤝 Repositórios Relacionados
+
+Frontend (React + Vite):
+https://github.com/FernandoBack/genesis-frontend
