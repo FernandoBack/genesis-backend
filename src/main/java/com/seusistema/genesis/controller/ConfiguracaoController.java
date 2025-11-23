@@ -7,21 +7,26 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/config")
-@CrossOrigin(origins = "*") // Libera acesso para o React (importante!)
+@CrossOrigin(origins = "*")
 public class ConfiguracaoController {
 
     @Autowired
     private ConfiguracaoService service;
 
-    // GET: Retorna as cores e nome do site
+    // 1. Método para PEGAR a configuração (GET)
     @GetMapping
-    public Configuracao getDadosSite() {
-        return service.buscarConfiguracao();
+    public Configuracao obterConfig() {
+        return service.obterConfiguracao();
     }
 
-    // POST: Admin atualiza os dados
+    // 2. Método para SALVAR a configuração (POST)
     @PostMapping
-    public Configuracao atualizarDados(@RequestBody Configuracao config) {
+    // O @RequestBody pega o JSON que veio do React e transforma na variável 'config'
+    public Configuracao salvarConfiguracao(@RequestBody Configuracao config) {
+
+        // 👇 AQUI ESTAVA O ERRO:
+        // Antes estava: service.salvarConfiguracao(); (Vazio)
+        // Agora está passando o 'config' para dentro do serviço.
         return service.salvarConfiguracao(config);
     }
 }
