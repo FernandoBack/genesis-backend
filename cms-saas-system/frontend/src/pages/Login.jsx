@@ -1,32 +1,43 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock } from 'lucide-react'; // Ícones
 import api from '../services/api';
 import Button from '../components/atoms/Button';
 import Input from '../components/atoms/Input';
 
 export default function Login() {
   const navigate = useNavigate();
+  // Mantemos o nome da variável visual como 'email' para facilitar
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
-
+    
     try {
-      // Chama o Java no /auth/login
-      const response = await api.post('/auth/login', { login: email, senha });
+      // 👇 O SEGREDO ESTÁ AQUI 👇
+      // O Java espera "login", então enviamos { login: email }
+      const response = await api.post('/auth/login', { 
+        login: email, 
+        password: password 
+      });
+
+      // Se chegou aqui, o login funcionou!
+      const token = response.data.token;
       
-      // Salva o Token no navegador
-      localStorage.setItem('genesis_token', response.data.token);
+      // 1. Salva o token no navegador
+      localStorage.setItem('genesis_token', token);
       
-      // Manda para o painel (vamos criar no próximo passo)
+      // 2. Avisa o Axios para usar esse token em todas as próximas requisições
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // 3. Redireciona para o painel
       navigate('/dashboard');
-      
+
     } catch (error) {
-      alert("Erro: Verifique e-mail e senha.");
+      console.error("Erro no login:", error);
+      alert('Login falhou! Verifique se digitou o e-mail e senha corretos.');
     } finally {
       setLoading(false);
     }
@@ -34,37 +45,36 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 space-y-8">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Acesso ao Painel</h1>
         
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary">Gênesis</h1>
-          <p className="text-gray-500 mt-2">Entre para gerenciar seu sistema</p>
-        </div>
-
         <form onSubmit={handleLogin} className="space-y-6">
-          <Input 
-            icon={Mail} 
-            type="email" 
-            placeholder="E-mail de acesso" 
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-          
-          <Input 
-            icon={Lock} 
-            type="password" 
-            placeholder="Sua senha" 
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+            <Input 
+              type="email" 
+              placeholder="admin@genesis.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-          <Button type="submit" loading={loading}>
-            Entrar no Sistema
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+            <Input 
+              type="password" 
+              placeholder="••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Verificando...' : 'Entrar'}
           </Button>
         </form>
-
       </div>
     </div>
   );

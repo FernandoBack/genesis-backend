@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConfiguracaoService {
@@ -13,39 +14,37 @@ public class ConfiguracaoService {
     @Autowired
     private ConfiguracaoRepository repository;
 
+    public Configuracao obterConfiguracao() {
+        List<Configuracao> configs = repository.findAll();
+        if (configs.isEmpty()) {
+            return null;
+        }
+        return configs.get(0);
+    }
+
     public Configuracao salvarConfiguracao(Configuracao novaConfig) {
-        // Buscamos TODAS as configurações (como é singleton, deve ter 0 ou 1)
-        List<Configuracao> lista = repository.findAll();
+        List<Configuracao> configs = repository.findAll();
 
-        if (!lista.isEmpty()) {
-            // CENÁRIO A: Já existe uma configuração. Vamos atualizar a primeira que acharmos.
-            Configuracao configExistente = lista.get(0);
+        if (configs.isEmpty()) {
+            // Se não existe, cria a primeira
+            return repository.save(novaConfig);
+        } else {
+            // Se já existe, atualiza a existente (ID 1)
+            Configuracao configExistente = configs.get(0);
 
-            // Atualizamos os dados da existente com os dados novos
             configExistente.setNomeEmpresa(novaConfig.getNomeEmpresa());
             configExistente.setSlogan(novaConfig.getSlogan());
             configExistente.setCorPrimaria(novaConfig.getCorPrimaria());
             configExistente.setCorSecundaria(novaConfig.getCorSecundaria());
             configExistente.setLogoUrl(novaConfig.getLogoUrl());
             configExistente.setEmailContato(novaConfig.getEmailContato());
+
+            // 👇 Agora esses métodos vão funcionar porque adicionamos no Modelo
             configExistente.setTelefoneWhatsApp(novaConfig.getTelefoneWhatsApp());
             configExistente.setLinkInstagram(novaConfig.getLinkInstagram());
             configExistente.setMetaDescricao(novaConfig.getMetaDescricao());
 
             return repository.save(configExistente);
-        } else {
-            // CENÁRIO B: Não existe nada. Criamos do zero.
-            // IMPORTANTE: NÃO definimos o ID manualmente aqui!
-            // O banco vai definir o ID (provavelmente será 1)
-            return repository.save(novaConfig);
         }
-    }
-
-    public Configuracao buscarConfiguracao() {
-        List<Configuracao> lista = repository.findAll();
-        if (lista.isEmpty()) {
-            return null;
-        }
-        return lista.get(0); // Retorna a primeira encontrada
     }
 }

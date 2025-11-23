@@ -17,20 +17,14 @@ public class Configuracao {
     private Long id;
 
     private String nomeEmpresa;
-
-    @Column(columnDefinition = "TEXT") // <--- MUDANÇA: Aceita texto infinito
     private String slogan;
-
     private String corPrimaria;
     private String corSecundaria;
-
-    @Column(columnDefinition = "TEXT") // <--- MUDANÇA: Links de imagens costumam ser gigantes
+    private String emailContato;
     private String logoUrl;
 
-    private String emailContato;
+    // 👇 Campos que estavam faltando e causando erro no Service
     private String telefoneWhatsApp;
     private String linkInstagram;
-
-    @Column(columnDefinition = "TEXT") // <--- MUDANÇA: Descrição para SEO é grande
     private String metaDescricao;
 }
